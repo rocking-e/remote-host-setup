@@ -1,0 +1,15 @@
+ubuntu:
+  hosts:
+    hilwdweu220401a.datawarehouse.expecn.com:
+    ashldweu2201a.karmalab.net:
+
+redhat:
+  hosts:
+    ashldwecent701a.karmalab.net:
+    ashldweora801b.karmalab.net:
+      ansible_python_interpreter: /usr/bin/python3
+
+davide:
+  children:
+    ubuntu:
+    redhat:

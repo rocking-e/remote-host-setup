@@ -1,0 +1,61 @@
+---
+
+# - name: Set binary directory
+#   ansible.builtin.set_fact:
+#     local_bindir: "/usr/local/bin"
+
+- name: Task information
+  ansible.builtin.debug:
+    msg:
+      - "Checking {{ local_bindir }}/terragrunt"
+
+- name: Check installed version - terragrunt
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      if [[ -f {{ local_bindir }}/terragrunt ]]; then
+        {{ local_bindir }}/terragrunt --version 2>&1 | cut -d' ' -f3 | tr -d v
+      else
+        echo "0"
+      fi
+    executable: /bin/bash
+  register: installed_version
+  changed_when: false
+
+- name: Show latest versions
+  ansible.builtin.debug:
+    msg:
+      - "Requested terragrunt version: '{{ terragrunt_version }}'"
+      - "Installed terragrunt version: '{{ installed_version.stdout }}'"
+
+- name: Do we need to install?
+  ansible.builtin.set_fact:
+    do_install: "{{ installed_version.stdout is version(terragrunt_version, '<') }}"
+
+- name: Show do_install to see if we need to install
+  ansible.builtin.debug:
+    msg: "{{ do_install }}"
+
+- name: Install terragrunt
+  when: do_install
+  block:
+    - name: Create temp folder
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: terragrunt
+      register: tempdir
+    - name: Download
+      ansible.builtin.get_url:
+        url: https://github.com/gruntwork-io/terragrunt/releases/download/v{{ terragrunt_version }}/terragrunt_linux_amd64
+        dest: "{{ tempdir.path }}/terragrunt"
+        mode: "0755"
+    - name: Copy
+      ansible.builtin.copy:
+        remote_src: true
+        src: "{{ tempdir.path }}/terragrunt"
+        dest: "{{ local_bindir }}/terragrunt"
+        mode: "0755"
+    - name: Cleanup
+      ansible.builtin.file:
+        path: "{{ tempdir.path }}"
+        state: absent

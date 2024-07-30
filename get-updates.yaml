@@ -1,0 +1,36 @@
+---
+- name: Get list of yum updates
+  hosts: all
+  gather_facts: true
+  become: true
+  become_method: ansible.builtin.sudo
+  tasks:
+
+    - name: Show OS ansible_os_family
+      ansible.builtin.debug:
+        msg:
+          - ansible_os_family = {{ ansible_os_family }}
+
+    - name: Get hostname and updates (Debian)
+      ansible.builtin.shell: hostname; apt list --upgradeable
+      register: deb_pkgs
+      changed_when: deb_pkgs.rc != 0
+      failed_when: deb_pkgs.rc != 0
+      when: ansible_os_family == 'Debian'
+
+    - name: Print results (Debian)
+      ansible.builtin.debug:
+        var: deb_pkgs.stdout_lines
+      when: deb_pkgs is defined
+
+    - name: Get hostname and updates (RHEL)
+      ansible.builtin.shell: hostname; yum list updates
+      register: rpm_pkgs
+      changed_when: rpm_pkgs.rc != 0
+      failed_when: rpm_pkgs.rc != 0
+      when: ansible_os_family == 'RedHat'
+
+    - name: Print results (RHEL)
+      ansible.builtin.debug:
+        var: rpm_pkgs.stdout_lines
+      when: rpm_pkgs is defined

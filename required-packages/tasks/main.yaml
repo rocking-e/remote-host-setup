@@ -1,0 +1,18 @@
+---
+# This role installs the OS packages that are required for Teleport work.
+# There are separate tasks for Ubuntu/Debian and RedHat/RHEL.
+
+- name: Show package lists
+  ansible.builtin.debug:
+    msg:
+      - "Common packages: {{ common_packages }}"
+      - "Ubuntu packages: {{ ubuntu_packages }}"
+      - "RedHat packages: {{ redhat_packages }}"
+
+- name: Install packages for Ubuntu/Debian
+  ansible.builtin.include_tasks: ubuntu.yaml
+  when: ansible_os_family == 'Debian'
+
+- name: Install packages for RedHat/RHEL
+  ansible.builtin.include_tasks: redhat.yaml
+  when: ansible_os_family == 'RedHat'

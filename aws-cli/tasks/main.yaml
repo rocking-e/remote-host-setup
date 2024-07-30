@@ -1,0 +1,40 @@
+---
+# This originated at https://github.com/xchangebit/ansible-aws-cli-cli
+
+- name: Install package dependencies.
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python3
+    - python3-venv
+    - unzip
+
+- name: Download the awscli bundle.
+  ansible.builtin.get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip
+    dest: /tmp/awscliv2.zip
+    mode: '0644'
+  register: aws_cli_download_bundle
+
+- name: Unarchive the installer.
+  ansible.builtin.unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp
+    copy: false
+    creates: /tmp/aws
+  when: aws_cli_download_bundle.changed
+  register: aws_cli_unarchive_installer
+
+- name: Install awscli package.  # noqa: no-handler
+  ansible.builtin.command: /tmp/aws/install
+  args:
+    creates: /usr/local/bin/aws
+  when: aws_cli_unarchive_installer.changed
+
+# - name: Configure AWS.
+#   ansible.builtin.command: aws configure set {{ item.key }} {{ item.value }} --profile {{ aws_profile }}
+#   with_dict:
+#     region: "us-west-2"
+#     format: "json"
+#   changed_when: false

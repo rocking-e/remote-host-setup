@@ -1,0 +1,20 @@
+---
+- name: Do package updates
+  hosts: all
+  gather_facts: true
+  become: true
+  become_method: ansible.builtin.sudo
+
+  tasks:
+    - name: Show OS ansible_os_family
+      ansible.builtin.debug:
+        msg:
+          - ansible_os_family = {{ ansible_os_family }}
+
+    - name: Update Debian nodes
+      ansible.builtin.include_tasks: updates/tasks/debian.yaml
+      when: ansible_os_family == 'Debian'
+
+    - name: Update RHEL nodes
+      ansible.builtin.include_tasks: updates/tasks/rhel.yaml
+      when: ansible_os_family == 'RedHat'

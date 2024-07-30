@@ -1,0 +1,82 @@
+---
+
+# Originally from https://github.com/mtik00/ansible-role-saml2aws/blob/main/tasks/main.yml
+
+- name: Set binary directory
+  ansible.builtin.set_fact:
+    local_bindir: "/usr/local/bin"
+
+- name: Task information
+  ansible.builtin.debug:
+    msg:
+      - "Checking {{ local_bindir }}/saml2aws"
+
+- name: Check installed version
+  ansible.builtin.shell:
+    cmd: |
+      if [[ -f {{ local_bindir }}/saml2aws ]]; then
+        {{ local_bindir }}/saml2aws --version 2>&1
+      else
+        echo "0"
+      fi
+    executable: /bin/bash
+  register: installed_version
+  changed_when: false
+
+- name: Ensure curl is installed
+  ansible.builtin.apt:
+    pkg:
+      - curl
+    state: present
+
+- name: Get latest saml2aws version  # noqa command-instead-of-module
+  ansible.builtin.shell: |
+      set -o pipefail && curl -Ls https://api.github.com/repos/Versent/saml2aws/releases/latest | grep 'tag_name' | cut -d'v' -f2 | cut -d'"' -f1
+  args:
+    executable: /bin/bash
+  register: saml2aws_version
+  changed_when: false
+
+- name: Show latest versions
+  ansible.builtin.debug:
+    msg:
+      - "Latest saml2aws version: '{{ saml2aws_version.stdout }}'"
+      - "Installed saml2aws version: '{{ installed_version.stdout }}'"
+
+- name: Do we need to install?
+  ansible.builtin.set_fact:
+    do_install: "{{ installed_version.stdout is version(saml2aws_version.stdout, '<') }}"
+
+- name: Show do_install to see if we need to install
+  ansible.builtin.debug:
+    msg: "{{ do_install }}"
+
+- name: Install saml2aws
+  when: do_install
+  block:
+    - name: Create temp folder
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: ansible
+      register: tempdir
+    - name: Download
+      ansible.builtin.get_url:
+        url: https://github.com/Versent/saml2aws/releases/download/v{{ saml2aws_version.stdout }}/saml2aws_{{ saml2aws_version.stdout }}_linux_amd64.tar.gz
+        dest: "{{ tempdir.path }}/saml2aws.tgz"
+        mode: "0777"
+    - name: Extract
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "{{ tempdir.path }}/saml2aws.tgz"
+        dest: "{{ tempdir.path }}"
+        creates: "{{ tempdir.path }}/saml2aws"
+    - name: Copy
+      ansible.builtin.copy:
+        remote_src: true
+        src: "{{ tempdir.path }}/saml2aws"
+        dest: "{{ local_bindir }}/saml2aws"
+        mode: "0755"
+    - name: Cleaup
+      ansible.builtin.file:
+        path: "{{ tempdir.path }}"
+        state: absent

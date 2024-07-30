@@ -1,0 +1,6 @@
+---
+
+- name: Install packages on Ubuntu/Debian
+  ansible.builtin.apt:
+    pkg: "{{ common_packages + ubuntu_packages }}"
+    state: present

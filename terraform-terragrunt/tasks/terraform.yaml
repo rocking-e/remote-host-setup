@@ -1,0 +1,67 @@
+---
+
+# - name: Set binary directory
+#   ansible.builtin.set_fact:
+#     local_bindir: "/usr/local/bin"
+
+- name: Task information
+  ansible.builtin.debug:
+    msg:
+      - "Checking {{ local_bindir }}/terraform"
+
+- name: Check installed version - terraform
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      if [[ -f {{ local_bindir }}/terraform ]]; then
+        {{ local_bindir }}/terraform --version 2>&1 | grep -i ^Terraform | cut -d'v' -f2
+      else
+        echo "0"
+      fi
+    executable: /bin/bash
+  register: installed_version
+  changed_when: false
+
+- name: Show latest versions
+  ansible.builtin.debug:
+    msg:
+      - "Requested terraform version: '{{ terraform_version }}'"
+      - "Installed terraform version: '{{ installed_version.stdout }}'"
+
+- name: Do we need to install?
+  ansible.builtin.set_fact:
+    do_install: "{{ installed_version.stdout is version(terraform_version, '<') }}"
+
+- name: Show do_install to see if we need to install
+  ansible.builtin.debug:
+    msg: "{{ do_install }}"
+
+- name: Install terraform
+  when: do_install
+  block:
+    - name: Create temp folder
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: terraform
+      register: tempdir
+    - name: Download
+      ansible.builtin.get_url:
+        url: https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip
+        dest: "{{ tempdir.path }}/terraform.zip"
+        mode: "0777"
+    - name: Extract
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "{{ tempdir.path }}/terraform.zip"
+        dest: "{{ tempdir.path }}"
+        creates: "{{ tempdir.path }}/terraform"
+    - name: Copy
+      ansible.builtin.copy:
+        remote_src: true
+        src: "{{ tempdir.path }}/terraform"
+        dest: "{{ local_bindir }}/terraform"
+        mode: "0755"
+    - name: Cleanup
+      ansible.builtin.file:
+        path: "{{ tempdir.path }}"
+        state: absent

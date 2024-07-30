@@ -1,0 +1,7 @@
+---
+
+- name: Install terraform
+  ansible.builtin.include_tasks: terraform.yaml
+
+- name: Install terragrunt
+  ansible.builtin.include_tasks: terragrunt.yaml

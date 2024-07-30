@@ -1,0 +1,9 @@
+---
+
+- name: RHEL upgrade all  # noqa package-latest
+  ansible.builtin.yum:
+    name: '*'
+    state: latest
+    update_cache: true
+    security: true
+    bugfix: true

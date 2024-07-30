@@ -1,0 +1,12 @@
+---
+- name: Configure a host for Teleport operational work
+  hosts:
+    - ubuntu
+  become: true
+  roles:
+    - required-packages
+    - packer
+    - docker
+    - aws-cli
+    - saml2aws
+    - terraform-terragrunt
