@@ -13,7 +13,7 @@ could be done in parallel.
 ## Playbook teleport-ops.yaml
 
 The [teleport-ops.yaml](./teleport-ops.yaml) playbook adds the tools necessary for working with the
-Teleport repositories. The work is done in the roles in the sub-directories. 
+Teleport repositories. The work is done in the roles in the sub-directories.
 
 ### required-packages
 
@@ -34,7 +34,7 @@ But it is available for local debugging and testing.
 ### docker
 
 The [docker](./docker/tasks/main.yaml) role does what the name implies - it installs the Docker
-Community Edition of `docker`. 
+Community Edition of `docker`.
 
 ### aws-cli
 
@@ -52,3 +52,15 @@ The [terraform-terragrunt](./terraform-terragrunt/tasks/main.yaml) role installs
 Terraform command and the [terragrunt](https://terragrunt.gruntwork.io) command. The installed
 version of `terraform` is the last open source version.
 
+## Playbook get-updates.yaml
+
+This playbook will return information from each host in the inventory. The more important
+information is the list of packages that can be upgraded. It also returns the FQDN of the host and
+the output of the `uptime` command.
+
+The list of packages is really the output of either `dnf list updates` or `apt list --upgradeable`
+and those commands usually have extra output.
+
+## Playbook do-updates.yaml
+
+This playbook will do a full package update on the systems.

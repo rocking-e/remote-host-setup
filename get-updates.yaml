@@ -12,7 +12,7 @@
           - ansible_os_family = {{ ansible_os_family }}
 
     - name: Get hostname and updates (Debian)
-      ansible.builtin.shell: hostname; apt list --upgradeable
+      ansible.builtin.shell: hostname -f; uptime; apt list --upgradeable
       register: deb_pkgs
       changed_when: deb_pkgs.rc != 0
       failed_when: deb_pkgs.rc != 0
@@ -21,10 +21,12 @@
     - name: Print results (Debian)
       ansible.builtin.debug:
         var: deb_pkgs.stdout_lines
-      when: deb_pkgs is defined
+      when:
+        - ansible_os_family == 'Debian'
+        - deb_pkgs is defined
 
     - name: Get hostname and updates (RHEL)
-      ansible.builtin.shell: hostname; yum list updates
+      ansible.builtin.shell: hostname -f; uptime; yum list updates
       register: rpm_pkgs
       changed_when: rpm_pkgs.rc != 0
       failed_when: rpm_pkgs.rc != 0
@@ -33,4 +35,6 @@
     - name: Print results (RHEL)
       ansible.builtin.debug:
         var: rpm_pkgs.stdout_lines
-      when: rpm_pkgs is defined
+      when:
+        - ansible_os_family == 'RedHat'
+        - rpm_pkgs is defined
