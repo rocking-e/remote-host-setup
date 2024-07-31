@@ -1,0 +1,60 @@
+---
+
+- name: Install aptitude
+  ansible.builtin.apt:
+    name: aptitude
+    state: present
+    update_cache: true
+
+- name: Install required system packages
+  ansible.builtin.apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+      - python-is-python3
+      - pass
+    state: present
+    update_cache: true
+
+- name: Add Docker GPG apt Key
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  ansible.builtin.apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu jammy stable
+    state: present
+
+- name: Update apt and install docker-ce
+  ansible.builtin.apt:
+    name: docker-ce
+    state: present
+    update_cache: true
+
+- name: Install Docker Module for Python
+  ansible.builtin.pip:
+    name: docker
+
+# - name: Pull default Docker image
+#   community.docker.docker_image_pull:
+#     name: "{{ default_container_image }}"
+
+# - name: Create default containers
+#   community.docker.docker_container:
+#     name: "{{ default_container_name }}{{ item }}"
+#     image: "{{ default_container_image }}"
+#     command: "{{ default_container_command }}"
+#     state: present
+#   with_sequence: count={{ container_count }}
+
+- name: Start and enable Docker service
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true

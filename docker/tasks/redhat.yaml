@@ -1,0 +1,16 @@
+---
+
+- name: Add Docker repository
+  ansible.builtin.yum_repository:
+    name: docker-ce
+    description: Docker CE Stable - $basearch
+    baseurl: https://download.docker.com/linux/rhel/$releasever/$basearch/stable
+    gpgcheck: yes
+    gpgkey: https://download.docker.com/linux/centos/gpg
+    enabled: yes
+    state: present
+
+- name: Install Docker RPM package
+  ansible.builtin.yum:
+    name: docker-ce
+    state: present

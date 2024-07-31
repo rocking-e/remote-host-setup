@@ -1,0 +1,6 @@
+---
+
+- name: Install packages on RedHat/CentOS
+  ansible.builtin.dnf:
+    name: "{{ common_packages + redhat_packages }}"
+    state: present

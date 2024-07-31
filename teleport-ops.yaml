@@ -1,7 +1,7 @@
 ---
 - name: Configure a host for Teleport operational work
   hosts:
-    - ubuntu
+    - all
   become: true
   roles:
     - required-packages

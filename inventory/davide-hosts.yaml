@@ -1,9 +1,9 @@
-ubuntu:
+davide_ubuntu:
   hosts:
     hilwdweu220401a.datawarehouse.expecn.com:
     ashldweu2201a.karmalab.net:
 
-redhat:
+davide_redhat:
   hosts:
     ashldwecent701a.karmalab.net:
     ashldweora801b.karmalab.net:
@@ -11,5 +11,5 @@ redhat:
 
 davide:
   children:
-    ubuntu:
-    redhat:
+    davide_ubuntu:
+    davide_redhat:

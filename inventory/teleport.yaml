@@ -2,7 +2,12 @@ ubuntu:
   hosts:
     ashldweu2201a.karmalab.net:
 
-teleport:
+redhat:
   hosts:
-    ashldweu2201a.karmalab.net:
+    ashldweora801b.karmalab.net:
+      ansible_python_interpreter: /usr/bin/python3
 
+teleport:
+  children:
+    ubuntu:
+    redhat:
