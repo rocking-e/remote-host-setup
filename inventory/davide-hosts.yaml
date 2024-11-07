@@ -3,13 +3,12 @@ davide_ubuntu:
     hilwdweu220401a.datawarehouse.expecn.com:
     ashldweu2201a.karmalab.net:
 
-davide_redhat:
+davide_rhel:
   hosts:
-    ashldwecent701a.karmalab.net:
     ashldweora801b.karmalab.net:
       ansible_python_interpreter: /usr/bin/python3
 
 davide:
   children:
     davide_ubuntu:
-    davide_redhat:
+    davide_rhel:
