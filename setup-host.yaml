@@ -7,6 +7,6 @@
     - required-packages
     - packer
     - docker
-    - aws-cli
+    - aws-cli-ssm
     - saml2aws
     - terraform-terragrunt
