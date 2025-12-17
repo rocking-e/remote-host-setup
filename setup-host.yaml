@@ -4,9 +4,15 @@
     - all
   become: true
   roles:
-    - required-packages
-    - packer
-    - docker
-    - aws-cli-ssm
-    - saml2aws
-    - terraform-terragrunt
+    - role: required-packages
+      tags: ["required-packages"]
+    - role: packer
+      tags: ["packer"]
+    - role: docker
+      tags: ["docker"]
+    - role: aws-cli-ssm
+      tags: ["aws-cli-ssm", "aws", "ssm", "aws-cli"]
+    - role: saml2aws
+      tags: ["saml2aws"]
+    - role: terraform-terragrunt
+      tags: ["terraform", "terraform-terragrunt"]
