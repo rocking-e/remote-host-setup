@@ -2,6 +2,7 @@ davide_ubuntu:
   hosts:
     hilwdweu220401a.datawarehouse.expecn.com:
     ashldweu2201a.karmalab.net:
+      ansible_python_interpreter: /usr/bin/python3
 
 davide_rhel:
   hosts:

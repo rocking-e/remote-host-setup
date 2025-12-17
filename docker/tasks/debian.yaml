@@ -37,9 +37,9 @@
     state: present
     update_cache: true
 
-- name: Install Docker Module for Python
-  ansible.builtin.pip:
-    name: docker
+# - name: Install Docker Module for Python
+#   ansible.builtin.pip:
+#     name: docker
 
 # - name: Pull default Docker image
 #   community.docker.docker_image_pull:

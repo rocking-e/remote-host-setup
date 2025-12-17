@@ -1,3 +1,6 @@
 ---
 
 local_bindir: "/usr/local/bin"
+
+# Default python interpreter for non-macOS hosts
+ansible_python_interpreter: "/usr/bin/python3"
