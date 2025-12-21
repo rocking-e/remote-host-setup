@@ -11,6 +11,6 @@
     state: present
 
 - name: Install Docker RPM package
-  ansible.builtin.yum:
+  ansible.builtin.yum: # noqa fqcn
     name: docker-ce
     state: present

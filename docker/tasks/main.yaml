@@ -7,3 +7,16 @@
 - name: Include tasks for docker on RedHat/CentOS
   ansible.builtin.include_tasks: redhat.yaml
   when: ansible_os_family == 'RedHat'
+
+- name: Ensure docker group exists
+  become: true
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Add current user to docker group
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user_id | default(ansible_user) | default(lookup('env', 'USER')) }}"
+    groups: docker
+    append: true
