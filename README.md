@@ -67,3 +67,6 @@ and those commands usually have extra output.
 ## Playbook do-updates.yaml
 
 This playbook will do a full package update on the systems.
+
+## Credential helper testing
+
